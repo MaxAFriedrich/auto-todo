@@ -79,8 +79,9 @@ def commit_file(file):
 def sort_list(file: Path):
     # Load tasks from file
     tasks = Tasks(path=file)
-    print(tasks, file, file.read_text())
     tasks.load()
+
+    print(tasks, file.absolute(), file.read_text())
 
     tasks = clean_file(tasks)
 
