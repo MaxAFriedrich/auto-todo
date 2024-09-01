@@ -137,7 +137,7 @@ class Tasks(object):
 
         self._trigger_event('loaded')
 
-    def save(self, filename=None):
+    def save(self, filename: Path | None = None):
         """Saves tasks that are saved in this manager. If specified they will
         be saved in the filename arguemnt of this function. Otherwise the
         default path (self.path) will be used.

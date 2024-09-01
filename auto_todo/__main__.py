@@ -7,6 +7,7 @@ from auto_todo.config import Config
 class Action(Enum):
     SORT = 'sort'
     WEB = 'web'
+    RENDER = 'render'
 
 
 def main():
@@ -20,6 +21,9 @@ def main():
         case Action.WEB:
             from .web import run_server
             run_server()
+        case Action.RENDER:
+            from .render import render
+            render()
         case _:
             print('Invalid action')
 
