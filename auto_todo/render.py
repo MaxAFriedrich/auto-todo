@@ -11,10 +11,24 @@ def has_none(tasks: CustomTasks, assignee):
     return True
 
 
-def render_table(tasks: CustomTasks, assignee: str = "Unassigned") -> str:
-    pretty_assignee = assignee
-    if pretty_assignee != "Unassigned":
-        pretty_assignee = pretty_assignee[2:].title()
+def render_table_unassigned(tasks: CustomTasks) -> str:
+    markdown = '# Unassigned\n\n'
+
+    markdown += '| Task | Priority | Urgency | Importance | Projects | Due |\n'
+    markdown += '|------|----------|---------|------------|----------|-----|\n'
+    for task in tasks.tasks:
+        if len(task.assignees) == 0:
+            markdown += (
+                f'| {task.striped_todo} | {task.priority} | {task.urgency} | '
+                f'{task.importance} | {", ".join(task.projects)} | '
+                f'{task.due_date} |\n')
+
+    markdown += '\n'
+    return markdown
+
+
+def render_table(tasks: CustomTasks, assignee) -> str:
+    pretty_assignee = assignee[2:].title()
 
     markdown = f'# {pretty_assignee}\n\n'
 
@@ -23,8 +37,7 @@ def render_table(tasks: CustomTasks, assignee: str = "Unassigned") -> str:
     markdown += '| Task | Priority | Urgency | Importance | Projects | Due |\n'
     markdown += '|------|----------|---------|------------|----------|-----|\n'
     for task in tasks.tasks:
-        if assignee in task.assignees or (
-                assignee == "Unassigned" and not task.assignees):
+        if assignee in task.assignees:
             markdown += (
                 f'| {task.striped_todo} | {task.priority} | {task.urgency} | '
                 f'{task.importance} | {", ".join(task.projects)} | '
@@ -45,7 +58,7 @@ def render():
     for assignee in assignees:
         markdown += render_table(main_list, assignee)
 
-    markdown += render_table(main_list)
+    markdown += render_table_unassigned(main_list)
 
     with open(main_list.path.with_suffix('.md'), 'w') as f:
         f.write(markdown)
