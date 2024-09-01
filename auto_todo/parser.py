@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from operator import attrgetter
+from pathlib import Path
 
 DATE_REGEX = "([\\d]{4})-([\\d]{2})-([\\d]{2})"
 CONTEXT_REGEX = '(@\\w+)'
@@ -119,7 +120,7 @@ class Tasks(object):
     # the dict that holds event handlers
     handlers = {}
 
-    def __init__(self, path=None, tasks=None):
+    def __init__(self, path: Path = None, tasks=None):
         self.path = path
         self.tasks = tasks if tasks is not None else []
 
@@ -129,11 +130,10 @@ class Tasks(object):
 
         self._trigger_event('load')
 
-        with open(self.path, 'r') as f:
-            i = 0
-            for line in f:
-                self.tasks.append(Task(line.strip(), i))
-                i += 1
+        self.tasks = [
+            Task(line.strip(), i) for i, line in
+            enumerate(self.path.read_text().splitlines())
+        ]
 
         self._trigger_event('loaded')
 
@@ -199,7 +199,8 @@ class Tasks(object):
                     return x.projects[0][:1].lower()
                 return ''
 
-            return Tasks(self.path, sorted(self.tasks, key=sort_key, reverse=True))
+            return Tasks(self.path,
+                         sorted(self.tasks, key=sort_key, reverse=True))
 
         else:
             return self

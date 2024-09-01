@@ -1,6 +1,5 @@
 import argparse
 from enum import Enum
-from pathlib import Path
 
 from auto_todo.config import Config
 
@@ -17,7 +16,7 @@ def main():
     match Action(args.action):
         case Action.SORT:
             from .sort_it import sort_list
-            sort_list(Path(Config().main_list))
+            sort_list(Config().main_list)
         case Action.WEB:
             from .web import run_server
             run_server()

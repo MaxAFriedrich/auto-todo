@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import yaml
 
 
@@ -23,5 +25,5 @@ class Config:
         return self.config.get('server', {}).get('refresh', 30)
 
     @property
-    def main_list(self) -> str:
-        return self.config.get('main_list', 'todo.txt')
+    def main_list(self) -> Path:
+        return Path(self.config.get('main_list', 'todo.txt'))
