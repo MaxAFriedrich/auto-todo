@@ -1,0 +1,6 @@
+server:
+  port: 9999
+  host: '0.0.0.0'
+  token: 'CHANGE_ME'
+  file_path: 'todo.txt'
+  refresh: 30
