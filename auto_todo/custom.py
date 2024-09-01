@@ -26,8 +26,8 @@ class CustomTask(Task):
 
     @property
     def meta(self) -> list[str]:
-        # any strings that match ` \w+:\w+`
-        regex = re.compile(r'(\w+:\w+)')
+        # any strings that match ` \w+:\S+`
+        regex = re.compile(r'(\w+:\S+)')
         return regex.findall(self.raw_todo)
 
     @property
@@ -38,12 +38,13 @@ class CustomTask(Task):
     @property
     def due_date(self) -> str:
         # find `due:2021-12-31`
-        return ([meta for meta in self.meta if meta.startswith('due:')] + [''])[
-            0]
+        return \
+            ([meta[4:] for meta in self.meta if meta.startswith('due:')] + [
+                ''])[0]
 
     @property
     def striped_todo(self) -> str:
-        regex = r"(@[u|i]\d)|(\+\S+)|(due\:\d{4}-\d\d-\d\d)|(\w+:\w+)"
+        regex = r"(@[u|i]\d)|(\+\S+)|(due\:\d{4}-\d\d-\d\d)|(\w+:\S+)"
         return re.sub(regex, '', self.todo).strip()
 
 

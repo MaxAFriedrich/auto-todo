@@ -17,6 +17,8 @@ def render_table_unassigned(tasks: CustomTasks) -> str:
     markdown += '| Task | Priority | Urgency | Importance | Projects | Due |\n'
     markdown += '|------|----------|---------|------------|----------|-----|\n'
     for task in tasks.tasks:
+        if task.raw_todo.strip() == '':
+            continue
         if len(task.assignees) == 0:
             markdown += (
                 f'| {task.striped_todo} | {task.priority} | {task.urgency} | '
