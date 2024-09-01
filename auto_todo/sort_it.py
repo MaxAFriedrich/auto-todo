@@ -81,8 +81,6 @@ def sort_list(file: Path):
     tasks = Tasks(path=file)
     tasks.load()
 
-    print(tasks, file.absolute(), file.read_text())
-
     tasks = clean_file(tasks)
 
     # Assign priority based on urgency and importance
