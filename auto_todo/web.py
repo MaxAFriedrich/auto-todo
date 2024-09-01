@@ -1,13 +1,10 @@
 import http.server
 import re
 
+from .config import Config
 from .parser import Tasks
 
-PORT = 9999
-HOST = '0.0.0.0'
-TOKEN = 'CHANGE ME'
-FILE_PATH = 'todo.txt'
-REFRESH = '30'
+config = Config()
 
 
 def strip_todo(task: str) -> str:
@@ -96,7 +93,8 @@ def get_priority(priority: str) -> str:
     colour = priority_colours[priority]
     return f'<td style="color: {colour}">{priority}</td>'
 
-def color()->str:
+
+def color() -> str:
     style = """
     <style>
     .due-past {
@@ -129,7 +127,8 @@ def color()->str:
     """
     return render(style)
 
-def monochrome()->str:
+
+def monochrome() -> str:
     style = """
     <style>
     body{
@@ -160,8 +159,9 @@ def monochrome()->str:
     """
     return render(style)
 
+
 def render(style) -> str:
-    tasks = Tasks(FILE_PATH)
+    tasks = Tasks(config.main_list)
     tasks.load()
 
     html = (f'<!DOCTYPE html>'
@@ -196,26 +196,26 @@ def render(style) -> str:
     return html
 
 
-if __name__ == '__main__':
+def run_server():
     class Handler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
-            if self.path == f'/{TOKEN}':
+            if self.path == f'/{config.server_token}':
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
-                self.send_header('Refresh', REFRESH)
+                self.send_header('Refresh', str(config.server_refresh))
                 self.end_headers()
                 self.wfile.write(monochrome().encode('utf-8'))
-            elif self.path == f'/{TOKEN}/color':
+            elif self.path == f'/{config.server_token}/color':
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
-                self.send_header('Refresh', REFRESH)
+                self.send_header('Refresh', str(config.server_refresh))
                 self.end_headers()
                 self.wfile.write(color().encode('utf-8'))
             else:
                 self.send_response(404)
                 self.end_headers()
 
-
-    httpd = http.server.HTTPServer((HOST, PORT), Handler)
-    print(f'Serving at {HOST}:{PORT}')
+    httpd = http.server.HTTPServer((config.server_host, config.server_port),
+                                   Handler)
+    print(f'Serving at {config.server_host}:{config.server_port}')
     httpd.serve_forever()

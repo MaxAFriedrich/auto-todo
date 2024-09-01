@@ -1,5 +1,8 @@
 import argparse
 from enum import Enum
+from pathlib import Path
+
+from auto_todo.config import Config
 
 
 class Action(Enum):
@@ -10,15 +13,14 @@ class Action(Enum):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('action', help='The action to perform')
-    parser.add_argument('file', help='The file to parse')
     args = parser.parse_args()
-    match args.action:
+    match Action(args.action):
         case Action.SORT:
             from .sort_it import sort_list
-            sort_list(args.file)
+            sort_list(Path(Config().main_list))
         case Action.WEB:
             from .web import run_server
-            run_server(args.file)
+            run_server()
         case _:
             print('Invalid action')
 
