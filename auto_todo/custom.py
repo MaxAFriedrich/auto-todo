@@ -1,11 +1,10 @@
-from dataclasses import dataclass
+import re
 from pathlib import Path
 
 from auto_todo.parser import Task, Tasks
 from auto_todo.web import config
 
 
-@dataclass
 class CustomTask(Task):
 
     def __init__(self, raw_todo: str, id: int):
@@ -26,17 +25,26 @@ class CustomTask(Task):
                 return int(context[2:])
 
     @property
+    def meta(self) -> list[str]:
+        # any strings that match ` \w+:\w+`
+        regex = re.compile(r'(\w+:\w+)')
+        return regex.findall(self.raw_todo)
+
+    @property
     def assignees(self) -> list[str]:
-        # find `@a:bob`
-        return [context[3:] for context in self.contexts if
-                context.startswith('@a:')]
+        # find `a:bob`
+        return [meta for meta in self.meta if meta.startswith('a:')]
 
     @property
     def due_date(self) -> str:
         # find `due:2021-12-31`
-        for context in self.contexts:
-            if context.startswith('due:'):
-                return context[4:]
+        return ([meta for meta in self.meta if meta.startswith('due:')] + [''])[
+            0]
+
+    @property
+    def striped_todo(self) -> str:
+        regex = r"(@[u|i]\d)|(\+\S+)|(due\:\d{4}-\d\d-\d\d)|(\w+:\w+)"
+        return re.sub(regex, '', self.todo).strip()
 
 
 class CustomTasks(Tasks):

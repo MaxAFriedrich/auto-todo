@@ -12,7 +12,12 @@ def has_none(tasks: CustomTasks, assignee):
 
 
 def render_table(tasks: CustomTasks, assignee: str = "Unassigned") -> str:
-    markdown = f'# {assignee}\n'
+    pretty_assignee = assignee
+    if pretty_assignee != "Unassigned":
+        pretty_assignee = pretty_assignee[2:].title()
+
+    markdown = f'# {pretty_assignee}\n\n'
+
     if has_none(tasks, assignee):
         return markdown + "No tasks\n"
     markdown += '| Task | Priority | Urgency | Importance | Projects | Due |\n'
@@ -20,9 +25,12 @@ def render_table(tasks: CustomTasks, assignee: str = "Unassigned") -> str:
     for task in tasks.tasks:
         if assignee in task.assignees or (
                 assignee == "Unassigned" and not task.assignees):
-            markdown += (f'| {task.todo} | {task.priority} | {task.urgency} | '
-                         f'{task.importance} | {", ".join(task.projects)} | '
-                         f'{task.due_date} |\n')
+            markdown += (
+                f'| {task.striped_todo} | {task.priority} | {task.urgency} | '
+                f'{task.importance} | {", ".join(task.projects)} | '
+                f'{task.due_date} |\n')
+
+    markdown += '\n'
     return markdown
 
 
